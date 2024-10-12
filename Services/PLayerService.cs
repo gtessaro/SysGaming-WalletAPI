@@ -1,6 +1,8 @@
 
 using SysGaming_WalletAPI.Models;
 using SysGaming_WalletAPI.Controllers.DTO;
+using Microsoft.EntityFrameworkCore;
+using System.Data.SqlTypes;
 
 namespace SysGaming_WalletAPI.Services
 {
@@ -17,6 +19,21 @@ namespace SysGaming_WalletAPI.Services
             _context.Players.Add(player);
             await _context.SaveChangesAsync();
             
+            return player;
+        }
+
+        public bool VerifyEmail(string Email){
+            return _context.Players.Any(j => j.Email == Email);
+        }
+
+        public async Task<Player> GetPlayerById(int id){
+            var player = await _context.Players.Include(j => j.Wallet)
+                                                  .FirstOrDefaultAsync(j => j.Id == id);
+
+            if (player == null)
+            {
+                return null;
+            }
             return player;
         }
 

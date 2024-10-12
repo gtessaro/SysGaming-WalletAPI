@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SysGaming-WalletAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8e3d8c3141aa9051f32e61447eba115df7cf9eed")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bc8360191d2a0870d24a25c5e10c8f9deefb949d")]
 [assembly: System.Reflection.AssemblyProductAttribute("SysGaming-WalletAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SysGaming-WalletAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
