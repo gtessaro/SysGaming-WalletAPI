@@ -26,7 +26,11 @@ namespace SysGaming_WalletAPI.Services
             return _context.Players.Any(j => j.Email == Email);
         }
 
+<<<<<<< HEAD
         public async Task<PlayerDTO> GetPlayerById(int id){
+=======
+        public async Task<Player> GetPlayerById(int id){
+>>>>>>> 7925f320fca30d4a9e711ea192cffcfe073406a5
             var player = await _context.Players.Include(j => j.Wallet)
                                                   .FirstOrDefaultAsync(j => j.Id == id);
 
@@ -34,7 +38,11 @@ namespace SysGaming_WalletAPI.Services
             {
                 return null;
             }
+<<<<<<< HEAD
             return ConvertFromPlayer(player);
+=======
+            return player;
+>>>>>>> 7925f320fca30d4a9e711ea192cffcfe073406a5
         }
 
         public Player ConvertFromPlayerDTO(PlayerDTO playerDTO){
