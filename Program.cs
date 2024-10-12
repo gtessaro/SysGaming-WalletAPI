@@ -15,6 +15,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 );
 
 builder.Services.AddScoped<PlayerService>();
+builder.Services.AddScoped<TransactionService>();
 
 // Configurar o JSON para lidar com ciclos de referência
 builder.Services.AddControllers()

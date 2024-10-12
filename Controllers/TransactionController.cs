@@ -1,58 +1,79 @@
 using Microsoft.AspNetCore.Mvc;
 using SysGaming_WalletAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using SysGaming_WalletAPI.Services;
+using SysGaming_WalletAPI.Controllers.DTO;
+using SysGaming_WalletAPI.Exceptions;
 
 
 namespace SysGaming_WalletAPI.Controllers
 {
     [ApiController]
     [Route("api/transaction")]
-    public class TransactionController(AppDbContext context) : ControllerBase
+    public class TransactionController(TransactionService service) : ControllerBase
     {
         
-        private readonly AppDbContext _context = context;
+        private readonly TransactionService _service = service;
 
         [HttpGet("{playerId}")]
         public async Task<IActionResult> GetTransactions(int playerId)
         {
-            var transactions = await _context.Transactions
-                .Where(t => t.PlayerId == playerId)
-                .ToListAsync();
-
-            if (transactions == null || !transactions.Any())
+          
+            try
             {
-                return NotFound("Nenhuma transação encontrada para o jogador.");
-            }
+                var transactions = await _service.GetTransactionsByPlayer(playerId);
 
-            return Ok(transactions);
+                return Ok(transactions);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Internal Error.", Details = ex.Message });
+            }
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateTransaction([FromBody] Transaction transaction)
+        public async Task<IActionResult> CreateTransaction([FromBody] TransactionDTO transactionDTO)
         {
-            var player = await _context.Players.FirstOrDefaultAsync(j => j.Id == transaction.PlayerId);
-            if (player == null)
+            try
             {
-                return BadRequest("Jogador não encontrado.");
+                var transaction = await _service.CreateTransaction(transactionDTO);
+                return CreatedAtAction(nameof(GetTransactions), new { id = transaction.Id }, transaction);
             }
-
-            transaction.DateTime = DateTime.UtcNow;
-            _context.Transactions.Add(transaction);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetTransacao), new { id = transaction.Id }, transaction);
+            catch (NotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (InsuficientBalaceException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Internal Error.", Details = ex.Message });
+            }
         }
 
         [HttpGet("transaction/{id}")]
-        public async Task<IActionResult> GetTransacao(int id)
+        public async Task<IActionResult> GetTransaction(int id)
         {
-            var transaction = await _context.Transactions.FirstOrDefaultAsync(t => t.Id == id);
-            if (transaction == null)
+            try
             {
-                return NotFound();
-            }
+                var transaction = await _service.GetTransactionById(id);
 
-            return Ok(transaction);
+                return Ok(transaction);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Internal Error.", Details = ex.Message });
+            }
         }
 
     }

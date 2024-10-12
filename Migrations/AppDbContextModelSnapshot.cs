@@ -94,7 +94,7 @@ namespace SysGaming_WalletAPI.Migrations
                     b.Property<string>("Type")
                         .HasColumnType("longtext");
 
-                    b.Property<decimal>("Valor")
+                    b.Property<decimal>("Value")
                         .HasColumnType("decimal(65,30)");
 
                     b.HasKey("Id");

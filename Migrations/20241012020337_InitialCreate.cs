@@ -70,7 +70,7 @@ namespace SysGaming_WalletAPI.Migrations
                     DateTime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Type = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Valor = table.Column<decimal>(type: "decimal(65,30)", nullable: false)
+                    Value = table.Column<decimal>(type: "decimal(65,30)", nullable: false)
                 },
                 constraints: table =>
                 {
