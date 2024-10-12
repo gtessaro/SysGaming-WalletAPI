@@ -1,6 +1,8 @@
 
 using SysGaming_WalletAPI.Models;
 using SysGaming_WalletAPI.Controllers.DTO;
+using Microsoft.EntityFrameworkCore;
+using System.Data.SqlTypes;
 
 namespace SysGaming_WalletAPI.Services
 {
@@ -20,16 +22,35 @@ namespace SysGaming_WalletAPI.Services
             return player;
         }
 
+        public bool VerifyEmail(string Email){
+            return _context.Players.Any(j => j.Email == Email);
+        }
+
+        public async Task<PlayerDTO> GetPlayerById(int id){
+            var player = await _context.Players.Include(j => j.Wallet)
+                                                  .FirstOrDefaultAsync(j => j.Id == id);
+
+            if (player == null)
+            {
+                return null;
+            }
+            return ConvertFromPlayer(player);
+        }
+
         public Player ConvertFromPlayerDTO(PlayerDTO playerDTO){
 
-            Player player = new Player();
-            player.Email = playerDTO.Email;
-            player.Name = playerDTO.Name;
-            player.Password = playerDTO.Password;
+            Player player = new()
+            {
+                Email = playerDTO.Email,
+                Name = playerDTO.Name,
+                Password = BCrypt.Net.BCrypt.HashPassword(playerDTO.Password)
+            };
 
-            Wallet wallet = new Wallet();
-            wallet.Balance = playerDTO.WalletDTO.Balance;
-            wallet.Currency = playerDTO.WalletDTO.Currency;
+            Wallet wallet = new()
+            {
+                Balance = playerDTO.WalletDTO.Balance,
+                Currency = playerDTO.WalletDTO.Currency
+            };
 
             player.Wallet = wallet;
 
@@ -48,7 +69,6 @@ namespace SysGaming_WalletAPI.Services
             {
                 Email = player.Email,
                 Name = player.Name,
-                Password = player.Password,
                 WalletDTO = walletDTO
             };
 
