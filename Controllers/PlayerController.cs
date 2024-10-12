@@ -2,36 +2,30 @@
 using Microsoft.AspNetCore.Mvc;
 using SysGaming_WalletAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using SysGaming_WalletAPI.Controllers.DTO;
+using SysGaming_WalletAPI.Services;
 
 namespace SysGaming_WalletAPI.Controllers
 {
     [ApiController]
     [Route("api/player")]
-    public class PlayerController : ControllerBase
+    public class PlayerController(AppDbContext context,PlayerService service) : ControllerBase
     {
 
-        private readonly AppDbContext _context;
-
-        public PlayerController(AppDbContext context)
-        {
-            _context = context;
-        }
+        private readonly AppDbContext _context = context;
+        private readonly PlayerService _service = service;
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody]Player player)
+        public async Task<IActionResult> Create([FromBody]PlayerDTO playerDTO)
         {
-            if (_context.Players.Any(j => j.Email == player.Email))
+            if (_context.Players.Any(j => j.Email == playerDTO.Email))
             {
                 return BadRequest("E-mail já cadastrado.");
             }
 
-            player.CreatedDate = DateTime.UtcNow;
-            _context.Players.Add(player);
-            await _context.SaveChangesAsync();
+            var player = await _service.SavePlayer(playerDTO);
 
             return CreatedAtAction(nameof(GetPlayer), new { id = player.Id }, player);
-        
-            // return player;
         }
 
         [HttpGet("{id}")]

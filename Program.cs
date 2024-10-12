@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SysGaming_WalletAPI.Models;
-
+using SysGaming_WalletAPI.Services;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +12,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         new MySqlServerVersion(new Version(8, 0, 32)) // Substitua pela versão do seu MySQL
     )
 );
+
+builder.Services.AddScoped<PlayerService>();
 
 // Configurar o JSON para lidar com ciclos de referência
 builder.Services.AddControllers()
