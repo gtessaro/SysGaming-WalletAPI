@@ -1,4 +1,4 @@
-
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using SysGaming_WalletAPI.Controllers.DTO;
 using SysGaming_WalletAPI.Models;
@@ -9,24 +9,28 @@ namespace SysGaming_WalletAPI.Controllers
     [Route("api/login")]
     public class LoginController: ControllerBase
     {
+
+        private readonly AppDbContext _context;
+
+        public LoginController(AppDbContext context)
+        {
+            _context = context;
+        }
+
         [HttpPost]
-        public async Task<Player> Login([FromBody]LoginDTO loginDTO)
+        public async Task<IActionResult> Login([FromBody]LoginDTO loginDTO)
         {
 
-            // var jogador = await _context.Jogadores
-            //     .Include(j => j.Carteira)
-            //     .FirstOrDefaultAsync(j => j.Email == loginDto.Email && j.Senha == loginDto.Senha);
+            var player = await _context.Players
+                .Include(j => j.Wallet)
+                .FirstOrDefaultAsync(j => j.Email == loginDTO.Email && j.Password == loginDTO.Password);
 
-            // if (jogador == null)
-            // {
-            //     return Unauthorized("Credenciais inválidas.");
-            // }
+            if (player == null)
+            {
+                return Unauthorized("Credenciais inválidas.");
+            }
 
-
-            Player player = new Player();
-            player.Email = loginDTO.Email;
-            player.Password = loginDTO.Password;
-            return player;
+            return Ok(player);
         }
     }
 }

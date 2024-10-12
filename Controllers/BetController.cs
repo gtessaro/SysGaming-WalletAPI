@@ -1,52 +1,44 @@
 
 using Microsoft.AspNetCore.Mvc;
 using SysGaming_WalletAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace SysGaming_WalletAPI.Controllers
 {    
     [ApiController]
     [Route("api/bet")]
-    public class BetController : ControllerBase
+    public class BetController(AppDbContext context) : ControllerBase
     {
-        // private readonly AppDbContext _context;
+        private readonly AppDbContext _context = context;
 
-        // public ApostasController(AppDbContext context)
-        // {
-        //     _context = context;
-        // }
-        
         [HttpPost]
         public async Task<IActionResult> CreateBet([FromBody] Bet bet)
         {
-            // var jogador = await _context.Jogadores.Include(j => j.Carteira).FirstOrDefaultAsync(j => j.Id == aposta.JogadorId);
-            // if (jogador == null || jogador.Carteira.Saldo < aposta.Valor)
-            // {
-            //     return BadRequest("Saldo insuficiente ou jogador não encontrado.");
-            // }
+            var player = await _context.Players.Include(j => j.Wallet).FirstOrDefaultAsync(j => j.Id == bet.PlayerId);
+            if (player == null || player.Wallet.Balance < bet.Value)
+            {
+                return BadRequest("Saldo insuficiente ou jogador não encontrado.");
+            }
 
-            // aposta.DataHora = DateTime.UtcNow;
-            // aposta.Situacao = "Pendente";
+            bet.DateTime = DateTime.UtcNow;
+            bet.Status = "Pendente";
 
-            // jogador.Carteira.Saldo -= aposta.Valor;
-            // _context.Apostas.Add(aposta);
-            // await _context.SaveChangesAsync();
+            player.Wallet.Balance -= bet.Value;
+            _context.Bets.Add(bet);
+            await _context.SaveChangesAsync();
 
-            // return CreatedAtAction(nameof(GetAposta), new { id = aposta.Id }, aposta);
-
-            return Ok(bet);
+            return CreatedAtAction(nameof(GetBet), new { id = bet.Id }, bet);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBet(int id)
         {
-            // var aposta = await _context.Apostas.FirstOrDefaultAsync(a => a.Id == id);
-            // if (aposta == null)
-            // {
-            //     return NotFound();
-            // }
-
-            var bet = new Bet();
-            bet.Id = id;
+            var bet = await _context.Bets.FirstOrDefaultAsync(a => a.Id == id);
+            
+            if (bet == null)
+            {
+                return NotFound();
+            }
 
             return Ok(bet);
         }
@@ -54,14 +46,14 @@ namespace SysGaming_WalletAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> CancelBet(int id)
         {
-            // var aposta = await _context.Apostas.FirstOrDefaultAsync(a => a.Id == id);
-            // if (aposta == null || aposta.Situacao == "Cancelada")
-            // {
-            //     return BadRequest("Aposta não encontrada ou já cancelada.");
-            // }
+            var bet = await _context.Bets.FirstOrDefaultAsync(a => a.Id == id);
+            if (bet == null || bet.Status == "Cancelada")
+            {
+                return BadRequest("Aposta não encontrada ou já cancelada.");
+            }
 
-            // aposta.Situacao = "Cancelada";
-            // await _context.SaveChangesAsync();
+            bet.Status = "Cancelada";
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }

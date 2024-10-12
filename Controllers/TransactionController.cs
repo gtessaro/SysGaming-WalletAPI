@@ -1,55 +1,58 @@
 using Microsoft.AspNetCore.Mvc;
 using SysGaming_WalletAPI.Models;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace SysGaming_WalletAPI.Controllers
 {
     [ApiController]
     [Route("api/transaction")]
-    public class TransactionController: ControllerBase
+    public class TransactionController(AppDbContext context) : ControllerBase
     {
         
-    [HttpGet("{playerId}")]
+        private readonly AppDbContext _context = context;
+
+        [HttpGet("{playerId}")]
         public async Task<IActionResult> GetTransactions(int playerId)
         {
-            // var transacoes = await _context.Transacoes
-            //     .Where(t => t.JogadorId == jogadorId)
-            //     .ToListAsync();
+            var transactions = await _context.Transactions
+                .Where(t => t.PlayerId == playerId)
+                .ToListAsync();
 
-            // if (transacoes == null || !transacoes.Any())
-            // {
-            //     return NotFound("Nenhuma transação encontrada para o jogador.");
-            // }
+            if (transactions == null || !transactions.Any())
+            {
+                return NotFound("Nenhuma transação encontrada para o jogador.");
+            }
 
-            return Ok("transacoes");
+            return Ok(transactions);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateTransaction([FromBody] Transaction transaction)
         {
-            // var jogador = await _context.Jogadores.FirstOrDefaultAsync(j => j.Id == transacao.JogadorId);
-            // if (jogador == null)
-            // {
-            //     return BadRequest("Jogador não encontrado.");
-            // }
+            var player = await _context.Players.FirstOrDefaultAsync(j => j.Id == transaction.PlayerId);
+            if (player == null)
+            {
+                return BadRequest("Jogador não encontrado.");
+            }
 
-            // transacao.DataHora = DateTime.UtcNow;
-            // _context.Transacoes.Add(transacao);
-            // await _context.SaveChangesAsync();
+            transaction.DateTime = DateTime.UtcNow;
+            _context.Transactions.Add(transaction);
+            await _context.SaveChangesAsync();
 
-            // return CreatedAtAction(nameof(GetTransacao), new { id = transacao.Id }, transacao);
-            return Ok(new Transaction());
+            return CreatedAtAction(nameof(GetTransacao), new { id = transaction.Id }, transaction);
         }
 
         [HttpGet("transaction/{id}")]
         public async Task<IActionResult> GetTransacao(int id)
         {
-            // var transacao = await _context.Transacoes.FirstOrDefaultAsync(t => t.Id == id);
-            // if (transacao == null)
-            // {
-            //     return NotFound();
-            // }
+            var transaction = await _context.Transactions.FirstOrDefaultAsync(t => t.Id == id);
+            if (transaction == null)
+            {
+                return NotFound();
+            }
 
-            return Ok("transacao");
+            return Ok(transaction);
         }
 
     }
