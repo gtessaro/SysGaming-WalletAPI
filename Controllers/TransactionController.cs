@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using SysGaming_WalletAPI.Models;
-using Microsoft.EntityFrameworkCore;
 using SysGaming_WalletAPI.Services;
 using SysGaming_WalletAPI.Controllers.DTO;
 using SysGaming_WalletAPI.Exceptions;
@@ -27,7 +25,7 @@ namespace SysGaming_WalletAPI.Controllers
             }
             catch (NotFoundException ex)
             {
-                return NotFound(new { Message = ex.Message });
+                return NotFound(new { ex.Message });
             }
             catch (Exception ex)
             {
@@ -45,11 +43,11 @@ namespace SysGaming_WalletAPI.Controllers
             }
             catch (NotFoundException ex)
             {
-                return NotFound(new { Message = ex.Message });
+                return NotFound(new { ex.Message });
             }
-            catch (InsuficientBalaceException ex)
+            catch (InsuficientBalanceException ex)
             {
-                return BadRequest(new { Message = ex.Message });
+                return BadRequest(new { ex.Message });
             }
             catch (Exception ex)
             {
@@ -68,7 +66,7 @@ namespace SysGaming_WalletAPI.Controllers
             }
             catch (NotFoundException ex)
             {
-                return NotFound(new { Message = ex.Message });
+                return NotFound(new { ex.Message });
             }
             catch (Exception ex)
             {

@@ -9,10 +9,9 @@ namespace SysGaming_WalletAPI.Controllers
 {
     [ApiController]
     [Route("api/login")]
-    public class LoginController(AppDbContext context, LoginService service) : ControllerBase
+    public class LoginController(LoginService service) : ControllerBase
     {
 
-        private readonly AppDbContext _context = context;
         private readonly LoginService _service = service;
 
         [HttpPost]
@@ -27,7 +26,7 @@ namespace SysGaming_WalletAPI.Controllers
             }
             catch (InvalidCredentialException ex)
             {
-                return Unauthorized(new { Message = ex.Message });
+                return Unauthorized(new { ex.Message });
             }
             catch (Exception ex)
             {

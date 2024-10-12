@@ -4,6 +4,7 @@ namespace SysGaming_WalletAPI.Controllers.DTO
 {
     public class WalletDTO
     {
+        public int PlayerId {get;set;}
         
         [Required(ErrorMessage = "Balance Field is Required")]
         public decimal Balance { get; set; }

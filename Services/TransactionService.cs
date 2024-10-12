@@ -53,7 +53,7 @@ namespace SysGaming_WalletAPI.Services
             if(transactionDTO.Type == TransactionType.BET ||
                 transactionDTO.Type == TransactionType.WITHDRAW ){
                     if(transactionDTO.Value > wallet.Balance){
-                        throw new InsuficientBalaceException($"Insuficient Balance for transaction {transactionDTO.Type} value {transactionDTO.Value}");
+                        throw new InsuficientBalanceException($"Insuficient Balance for transaction {transactionDTO.Type} value {transactionDTO.Value}");
                     }
                     wallet.Balance = transactionDTO.Value - wallet.Balance;
             }
