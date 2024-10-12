@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SysGaming_WalletAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class MigracaoInicialInitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -43,9 +43,8 @@ namespace SysGaming_WalletAPI.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     PlayerId = table.Column<int>(type: "int", nullable: false),
                     Value = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
-                    Status = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Prize = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: true),
+                    Prize = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
                     DateTime = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
@@ -68,8 +67,7 @@ namespace SysGaming_WalletAPI.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     PlayerId = table.Column<int>(type: "int", nullable: false),
                     DateTime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Type = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Type = table.Column<int>(type: "int", nullable: true),
                     Value = table.Column<decimal>(type: "decimal(65,30)", nullable: false)
                 },
                 constraints: table =>

@@ -12,8 +12,8 @@ using SysGaming_WalletAPI.Models;
 namespace SysGaming_WalletAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241012020337_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20241012202248_MigracaoInicialInitialMigration")]
+    partial class MigracaoInicialInitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,11 +39,11 @@ namespace SysGaming_WalletAPI.Migrations
                     b.Property<int>("PlayerId")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("Prize")
+                    b.Property<decimal>("Prize")
                         .HasColumnType("decimal(65,30)");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("longtext");
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Value")
                         .HasColumnType("decimal(65,30)");
@@ -94,8 +94,8 @@ namespace SysGaming_WalletAPI.Migrations
                     b.Property<int>("PlayerId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Type")
-                        .HasColumnType("longtext");
+                    b.Property<int?>("Type")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Value")
                         .HasColumnType("decimal(65,30)");

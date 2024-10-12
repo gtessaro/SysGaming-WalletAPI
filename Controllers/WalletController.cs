@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using SysGaming_WalletAPI.Models;
-using Microsoft.EntityFrameworkCore;
 using SysGaming_WalletAPI.Services;
 using SysGaming_WalletAPI.Exceptions;
 
@@ -8,10 +6,9 @@ namespace SysGaming_WalletAPI.Controllers
 {
     [ApiController]
     [Route("api/wallet")]
-    public class WalletController(AppDbContext context, WalletService service) : ControllerBase
+    public class WalletController( WalletService service) : ControllerBase
     {
 
-        private readonly AppDbContext _context = context;
         private readonly WalletService _service = service;
 
         [HttpGet("{playerId}")]

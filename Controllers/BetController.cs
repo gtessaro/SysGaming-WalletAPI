@@ -2,60 +2,107 @@
 using Microsoft.AspNetCore.Mvc;
 using SysGaming_WalletAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using SysGaming_WalletAPI.Controllers.DTO;
+using SysGaming_WalletAPI.Services;
+using SysGaming_WalletAPI.Exceptions;
 
 namespace SysGaming_WalletAPI.Controllers
 {    
     [ApiController]
     [Route("api/bet")]
-    public class BetController(AppDbContext context) : ControllerBase
+    public class BetController(AppDbContext context, BetService service) : ControllerBase
     {
         private readonly AppDbContext _context = context;
+        private readonly BetService _service = service;
 
         [HttpPost]
-        public async Task<IActionResult> CreateBet([FromBody] Bet bet)
+        public async Task<IActionResult> CreateBet([FromBody] BetDTO betDTO)
         {
-            var player = await _context.Players.Include(j => j.Wallet).FirstOrDefaultAsync(j => j.Id == bet.PlayerId);
-            if (player == null || player.Wallet.Balance < bet.Value)
+            try
             {
-                return BadRequest("Saldo insuficiente ou jogador não encontrado.");
+                var bet = await _service.CreateBet(betDTO);
+            
+                return CreatedAtAction(nameof(GetBet), new { id = bet.Id }, bet);
+            }
+            catch (InvalidOperationException ex )
+            {
+                return BadRequest(new { ex.Message });
+            }
+            catch (InsuficientBalanceException ex )
+            {
+                return BadRequest(new { ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Internal Error.", Details = ex.Message });
             }
 
-            bet.DateTime = DateTime.UtcNow;
-            bet.Status = "Pendente";
-
-            player.Wallet.Balance -= bet.Value;
-            _context.Bets.Add(bet);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetBet), new { id = bet.Id }, bet);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBet(int id)
         {
-            var bet = await _context.Bets.FirstOrDefaultAsync(a => a.Id == id);
-            
-            if (bet == null)
+            try
             {
-                return NotFound();
+                var bet = await _service.FindById(id);
+            
+                return Ok(bet);
             }
+            catch (NotFoundException ex )
+            {
+                return NotFound(new { ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Internal Error.", Details = ex.Message });
+            }
+        }
 
-            return Ok(bet);
+        [HttpGet("player/{playerId}")]
+        public async Task<IActionResult> GetBetsByPlayer(int playerId)
+        {
+            try
+            {
+                var bet = await _service.FindByPlayerId(playerId);
+            
+                return Ok(bet);
+            }
+            catch (NotFoundException ex )
+            {
+                return NotFound(new { ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Internal Error.", Details = ex.Message });
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> CancelBet(int id)
         {
-            var bet = await _context.Bets.FirstOrDefaultAsync(a => a.Id == id);
-            if (bet == null || bet.Status == "Cancelada")
+
+            try
             {
-                return BadRequest("Aposta não encontrada ou já cancelada.");
+                await _service.CancelBet(id);
+
+                return NoContent();
             }
-
-            bet.Status = "Cancelada";
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (NotFoundException ex )
+            {
+                return NotFound(new { ex.Message });
+            }
+            catch (InvalidOperationException ex )
+            {
+                return BadRequest(new { ex.Message });
+            }
+            catch (InsuficientBalanceException ex )
+            {
+                return BadRequest(new { ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Internal Error.", Details = ex.Message });
+            }
         }
         
     }

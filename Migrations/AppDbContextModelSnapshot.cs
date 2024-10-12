@@ -36,11 +36,11 @@ namespace SysGaming_WalletAPI.Migrations
                     b.Property<int>("PlayerId")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("Prize")
+                    b.Property<decimal>("Prize")
                         .HasColumnType("decimal(65,30)");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("longtext");
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Value")
                         .HasColumnType("decimal(65,30)");
@@ -91,8 +91,8 @@ namespace SysGaming_WalletAPI.Migrations
                     b.Property<int>("PlayerId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Type")
-                        .HasColumnType("longtext");
+                    b.Property<int?>("Type")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Value")
                         .HasColumnType("decimal(65,30)");
