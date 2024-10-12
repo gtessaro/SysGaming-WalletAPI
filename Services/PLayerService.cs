@@ -35,7 +35,6 @@ namespace SysGaming_WalletAPI.Services
                 return null;
             }
             return ConvertFromPlayer(player);
-            return player;
         }
 
         public Player ConvertFromPlayerDTO(PlayerDTO playerDTO){
