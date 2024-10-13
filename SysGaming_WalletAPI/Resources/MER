@@ -1,0 +1,11 @@
+PLayers
+    Id, Name, Email, PAssword, CreatedDate
+
+Wallets
+    Id, PlayerId, Balance, Currency
+
+Bets
+    Id, PlayerId, Value, Status, Prize, DateTime
+
+Transactions
+    Id, PlayerId, Value, Type, DateTime
