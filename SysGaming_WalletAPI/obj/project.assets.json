@@ -2674,11 +2674,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\tessa\\Documents\\SysGaming-WalletAPI\\SysGaming-WalletAPI.csproj",
+      "projectUniqueName": "C:\\Users\\tessa\\Documents\\SysGaming-WalletAPI\\SysGaming_WalletAPI\\SysGaming-WalletAPI.csproj",
       "projectName": "SysGaming-WalletAPI",
-      "projectPath": "C:\\Users\\tessa\\Documents\\SysGaming-WalletAPI\\SysGaming-WalletAPI.csproj",
+      "projectPath": "C:\\Users\\tessa\\Documents\\SysGaming-WalletAPI\\SysGaming_WalletAPI\\SysGaming-WalletAPI.csproj",
       "packagesPath": "C:\\Users\\tessa\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\tessa\\Documents\\SysGaming-WalletAPI\\obj\\",
+      "outputPath": "C:\\Users\\tessa\\Documents\\SysGaming-WalletAPI\\SysGaming_WalletAPI\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

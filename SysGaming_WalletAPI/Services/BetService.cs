@@ -119,32 +119,7 @@ namespace SysGaming_WalletAPI.Services
 
         }
 
-        // private async Task<decimal> HandleLostBetAsync(int playerId)
-        // {
-        //     var totalLostBets = await _context.Bets
-        //         .Where(b => b.PlayerId == playerId && b.Status == BetStatus.LOST)
-        //         .CountAsync();
-
-        //     if (totalLostBets > 0 && totalLostBets % 5 == 0)
-        //     {
-        //         var lostBets = await _context.Bets
-        //             .Where(b => b.PlayerId == playerId && b.Status == BetStatus.LOST)
-        //             .OrderByDescending(b => b.DateTime)
-        //             .Take(5)
-        //             .ToListAsync();
-
-        //         var totalLostAmount = lostBets.Sum(b => Math.Abs(b.Value));
-        //         var bonus = totalLostAmount * 0.10m; // Bônus de 10%
-
-        //         RegisterTransaction(playerId, TransactionType.PRIZE, bonus);
-
-        //         return bonus; 
-        //     }
-
-        //     return 0; 
-        // }
-
-        private async Task<decimal> HandleLostBetAsync(int playerId)
+        public async Task<decimal> HandleLostBetAsync(int playerId)
         {
             var last5Bets = await _context.Bets
                     .Where(b => b.PlayerId == playerId )
