@@ -1,4 +1,6 @@
 
+using System.Net.WebSockets;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 using SysGaming_WalletAPI.Controllers.DTO;
 using SysGaming_WalletAPI.Exceptions;
@@ -6,10 +8,11 @@ using SysGaming_WalletAPI.Models;
 
 namespace SysGaming_WalletAPI.Services
 {
-    public class BetService(AppDbContext context)
+    public class BetService(AppDbContext context,WebSocketConnectionManager webSocketManager)
     {
         
         private readonly AppDbContext _context = context;
+        private readonly WebSocketConnectionManager _webSocketManager = webSocketManager;
         private readonly Random _random = new();
 
         public async Task<PagedResult<Bet>> GetPlayerBetsAsync(int playerId, int page, int pageSize)
@@ -18,10 +21,8 @@ namespace SysGaming_WalletAPI.Services
                 .Where(b => b.PlayerId == playerId)
                 .OrderByDescending(b => b.DateTime);
 
-            // Total de apostas
             int totalItems = await query.CountAsync();
 
-            // Registros paginados
             var items = await query
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
@@ -58,8 +59,8 @@ namespace SysGaming_WalletAPI.Services
             }else{
                 player.Wallet.Balance -= betDTO.Value;
             }
-            // bool playerWon = _random.Next(0, 2) == 1;
-            bool playerWon = _random.Next(0, 2) >= 2;
+            bool playerWon = _random.Next(0, 2) == 1;
+            // bool playerWon = _random.Next(0, 2) >= 2;
 
             var bet = RegisterBet(betDTO, playerWon);
 
@@ -75,6 +76,8 @@ namespace SysGaming_WalletAPI.Services
             }
 
             await _context.SaveChangesAsync();
+            
+            await NotifyWalletUpdate(player.Id, player.Wallet.Balance);
 
             return bet;
         }
@@ -165,6 +168,45 @@ namespace SysGaming_WalletAPI.Services
                 DateTime = DateTime.UtcNow
             };
             _context.Transactions.Add(transaction);
+        }
+
+        // public async Task<Bet> CreateBetWS(BetDTO betDTO)
+        // {
+        //     var player = await _context.Players.Include(j => j.Wallet)
+        //         .FirstOrDefaultAsync(j => j.Id == betDTO.PlayerId);
+
+        //     if (player == null || player.Wallet.Balance < betDTO.Value)
+        //     {
+        //         throw new InsuficientBalanceException("Insufficient balance.");
+        //     }
+
+        //     player.Wallet.Balance -= betDTO.Value;
+
+        //     var bet = new Bet
+        //     {
+        //         PlayerId = betDTO.PlayerId,
+        //         Value = betDTO.Value,
+        //         Status = BetStatus.LOST,
+        //         DateTime = DateTime.UtcNow
+        //     };
+
+        //     _context.Bets.Add(bet);
+        //     await _context.SaveChangesAsync();
+
+        //     // Enviar atualização do saldo via WebSocket
+        //     await NotifyWalletUpdate(player.Id, player.Wallet.Balance);
+
+        //     return bet;
+        // }
+
+        private async Task NotifyWalletUpdate(int playerId, decimal newBalance)
+        {
+            var socket = _webSocketManager.GetConnection(playerId);
+            if (socket != null && socket.State == WebSocketState.Open)
+            {
+                var message = Encoding.UTF8.GetBytes($"New Balance: {newBalance:C}");
+                await socket.SendAsync(new ArraySegment<byte>(message), WebSocketMessageType.Text, true, CancellationToken.None);
+            }
         }
         
     }

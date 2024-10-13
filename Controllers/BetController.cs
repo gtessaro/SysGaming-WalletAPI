@@ -1,7 +1,6 @@
 
 using Microsoft.AspNetCore.Mvc;
 using SysGaming_WalletAPI.Models;
-using Microsoft.EntityFrameworkCore;
 using SysGaming_WalletAPI.Controllers.DTO;
 using SysGaming_WalletAPI.Services;
 using SysGaming_WalletAPI.Exceptions;
