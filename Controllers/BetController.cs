@@ -58,25 +58,6 @@ namespace SysGaming_WalletAPI.Controllers
             }
         }
 
-        [HttpGet("player/{playerId}")]
-        public async Task<IActionResult> GetBetsByPlayer(int playerId)
-        {
-            try
-            {
-                var bet = await _service.FindByPlayerId(playerId);
-            
-                return Ok(bet);
-            }
-            catch (NotFoundException ex )
-            {
-                return NotFound(new { ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { Message = "Internal Error.", Details = ex.Message });
-            }
-        }
-
         [HttpDelete("{id}")]
         public async Task<IActionResult> CancelBet(int id)
         {
@@ -103,6 +84,13 @@ namespace SysGaming_WalletAPI.Controllers
             {
                 return StatusCode(500, new { Message = "Internal Error.", Details = ex.Message });
             }
+        }
+
+        [HttpGet("bets")]
+        public async Task<IActionResult> GetPlayerBets(int playerId, int page = 1, int pageSize = 10)
+        {
+            var result = await _service.GetPlayerBetsAsync(playerId, page, pageSize);
+            return Ok(result);
         }
         
     }

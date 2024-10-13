@@ -12,62 +12,39 @@ namespace SysGaming_WalletAPI.Services
     {
         private readonly AppDbContext _context = context;
 
-        public async Task<List<TransactionDTO>> GetTransactionsByPlayer(int playerId){
-            var transactions = await _context.Transactions
-                .Where(t => t.PlayerId == playerId)
+        public async Task<PagedResult<Transaction>> GetPlayerTransactionsAsync(int playerId, int page, int pageSize)
+        {
+            var query = _context.Transactions
+                .Where(b => b.PlayerId == playerId)
+                .OrderByDescending(b => b.DateTime);
+
+            // Total de apostas
+            int totalItems = await query.CountAsync();
+
+            // Registros paginados
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(b => new Transaction
+                {
+                    Id = b.Id,
+                    PlayerId = b.PlayerId,
+                    Value = b.Value,
+                    Type = b.Type,
+                    DateTime = b.DateTime
+                })
                 .ToListAsync();
 
-            if (transactions == null || !transactions.Any())
+            return new PagedResult<Transaction>
             {
-                throw new NotFoundException($"No transactions for player {playerId}.");
-            }
-
-            var transactionDTOs = transactions.Select(t => new TransactionDTO
-            {
-                PlayerId = t.PlayerId,
-                Type = t.Type, 
-                Value = t.Value,
-                DateTime = t.DateTime
-            }).ToList();
-
-            return transactionDTOs;
+                TotalItems = totalItems,
+                Page = page,
+                PageSize = pageSize,
+                Items = items
+            };
         }
 
-        public async Task<Transaction> CreateTransaction(TransactionDTO transactionDTO){
-            var player = await _context.Players.FirstOrDefaultAsync(j => j.Id == transactionDTO.PlayerId);
-            if (player == null)
-            {
-                throw new NotFoundException($"Player with ID {transactionDTO.PlayerId} not found.");
-            }
-            
-            //colocar no wallet Service
-            var wallet = await _context.Wallets.FirstOrDefaultAsync(w => w.PlayerId == player.Id);
-            if(wallet == null){
-                throw new NotFoundException($"Player with ID {transactionDTO.PlayerId} has no wallet.");
-            }
-            // Ex.: "DEPOSIT", "BET", "PRIZE", "CANCEL","WITHDRAW"
-            if(transactionDTO.Type == TransactionType.DEPOSIT ||
-                transactionDTO.Type == TransactionType.PRIZE ){
-                    wallet.Balance = transactionDTO.Value + wallet.Balance;
-            }
-            if(transactionDTO.Type == TransactionType.BET ||
-                transactionDTO.Type == TransactionType.WITHDRAW ){
-                    if(transactionDTO.Value > wallet.Balance){
-                        throw new InsuficientBalanceException($"Insuficient Balance for transaction {transactionDTO.Type} value {transactionDTO.Value}");
-                    }
-                    wallet.Balance = transactionDTO.Value - wallet.Balance;
-            }
-            
-            var transaction = FromDTO(transactionDTO);
-
-            transaction.DateTime = DateTime.UtcNow;
-            _context.Transactions.Add(transaction);
-            await _context.SaveChangesAsync();
-            
-            return transaction;
-        }
-
-        public async Task<Transaction> GetTransactionById(int id){
+                public async Task<Transaction> GetTransactionById(int id){
             var transaction = await _context.Transactions.FirstOrDefaultAsync(t => t.Id == id);
 
             if (transaction == null)

@@ -12,6 +12,38 @@ namespace SysGaming_WalletAPI.Services
         private readonly AppDbContext _context = context;
         private readonly Random _random = new();
 
+        public async Task<PagedResult<Bet>> GetPlayerBetsAsync(int playerId, int page, int pageSize)
+        {
+            var query = _context.Bets
+                .Where(b => b.PlayerId == playerId)
+                .OrderByDescending(b => b.DateTime);
+
+            // Total de apostas
+            int totalItems = await query.CountAsync();
+
+            // Registros paginados
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(b => new Bet
+                {
+                    Id = b.Id,
+                    PlayerId = b.PlayerId,
+                    Value = b.Value,
+                    Status = b.Status,
+                    DateTime = b.DateTime
+                })
+                .ToListAsync();
+
+            return new PagedResult<Bet>
+            {
+                TotalItems = totalItems,
+                Page = page,
+                PageSize = pageSize,
+                Items = items
+            };
+        }
+
         public async Task<Bet> CreateBet(BetDTO betDTO)
         {
             if (betDTO.Value < 1)
@@ -50,16 +82,6 @@ namespace SysGaming_WalletAPI.Services
         public async Task<Bet> FindById(int id){
             var bet = await _context.Bets.FirstOrDefaultAsync(a => a.Id == id) 
                     ?? throw new NotFoundException($"Bet with ID {id} not found.");
-
-            return bet;
-        }
-        
-        public async Task<List<Bet>> FindByPlayerId(int playerId){
-            var bet = await _context.Bets
-                    .Where(b => b.PlayerId == playerId)
-                    .OrderByDescending(b => b.DateTime)
-                    .ToListAsync()
-                    ?? throw new NotFoundException($"Bets for playerId {playerId} not found.");
 
             return bet;
         }

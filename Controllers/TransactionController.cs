@@ -13,47 +13,13 @@ namespace SysGaming_WalletAPI.Controllers
         
         private readonly TransactionService _service = service;
 
-        [HttpGet("{playerId}")]
-        public async Task<IActionResult> GetTransactions(int playerId)
+        [HttpGet("transactions")]
+        public async Task<IActionResult> GetPlayerBets(int playerId, int page = 1, int pageSize = 10)
         {
-          
-            try
-            {
-                var transactions = await _service.GetTransactionsByPlayer(playerId);
-
-                return Ok(transactions);
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(new { ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { Message = "Internal Error.", Details = ex.Message });
-            }
+            var result = await _service.GetPlayerTransactionsAsync(playerId, page, pageSize);
+            return Ok(result);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateTransaction([FromBody] TransactionDTO transactionDTO)
-        {
-            try
-            {
-                var transaction = await _service.CreateTransaction(transactionDTO);
-                return CreatedAtAction(nameof(GetTransactions), new { id = transaction.Id }, transaction);
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(new { ex.Message });
-            }
-            catch (InsuficientBalanceException ex)
-            {
-                return BadRequest(new { ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { Message = "Internal Error.", Details = ex.Message });
-            }
-        }
 
         [HttpGet("transaction/{id}")]
         public async Task<IActionResult> GetTransaction(int id)
