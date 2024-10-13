@@ -60,7 +60,7 @@ Antes de executar o projeto, certifique-se de ter instalado:
 ## **Configuração do Projeto**
 1. Clonar o Repositório
    ```bash
-   git clone https://github.com/seu-usuario/SysGaming-WalletAPI.git
+   git clone https://github.com/gtessaro/SysGaming-WalletAPI.git
    cd SysGaming-WalletAPI
 2. restaurar deepndências
    ```bash
