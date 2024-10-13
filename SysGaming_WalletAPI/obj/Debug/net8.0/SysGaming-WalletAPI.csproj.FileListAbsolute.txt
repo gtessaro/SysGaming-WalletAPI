@@ -118,7 +118,6 @@ C:\Users\tessa\Documents\SysGaming-WalletAPI\SysGaming_WalletAPI\bin\Debug\net8.
 C:\Users\tessa\Documents\SysGaming-WalletAPI\SysGaming_WalletAPI\bin\Debug\net8.0\SysGaming-WalletAPI.runtimeconfig.json
 C:\Users\tessa\Documents\SysGaming-WalletAPI\SysGaming_WalletAPI\bin\Debug\net8.0\SysGaming-WalletAPI.dll
 C:\Users\tessa\Documents\SysGaming-WalletAPI\SysGaming_WalletAPI\bin\Debug\net8.0\SysGaming-WalletAPI.pdb
-C:\Users\tessa\Documents\SysGaming-WalletAPI\SysGaming_WalletAPI\bin\Debug\net8.0\BCrypt.Net-Next.dll
 C:\Users\tessa\Documents\SysGaming-WalletAPI\SysGaming_WalletAPI\bin\Debug\net8.0\Humanizer.dll
 C:\Users\tessa\Documents\SysGaming-WalletAPI\SysGaming_WalletAPI\bin\Debug\net8.0\Microsoft.AspNetCore.OpenApi.dll
 C:\Users\tessa\Documents\SysGaming-WalletAPI\SysGaming_WalletAPI\bin\Debug\net8.0\Microsoft.Bcl.AsyncInterfaces.dll
@@ -224,3 +223,4 @@ C:\Users\tessa\Documents\SysGaming-WalletAPI\SysGaming_WalletAPI\obj\Debug\net8.
 C:\Users\tessa\Documents\SysGaming-WalletAPI\SysGaming_WalletAPI\obj\Debug\net8.0\SysGaming-WalletAPI.pdb
 C:\Users\tessa\Documents\SysGaming-WalletAPI\SysGaming_WalletAPI\obj\Debug\net8.0\SysGaming-WalletAPI.genruntimeconfig.cache
 C:\Users\tessa\Documents\SysGaming-WalletAPI\SysGaming_WalletAPI\obj\Debug\net8.0\ref\SysGaming-WalletAPI.dll
+C:\Users\tessa\Documents\SysGaming-WalletAPI\SysGaming_WalletAPI\bin\Debug\net8.0\BCrypt.Net-Next.dll

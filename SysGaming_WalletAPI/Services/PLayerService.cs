@@ -2,7 +2,7 @@
 using SysGaming_WalletAPI.Models;
 using SysGaming_WalletAPI.Controllers.DTO;
 using Microsoft.EntityFrameworkCore;
-using System.Data.SqlTypes;
+using SysGaming_WalletAPI.Exceptions;
 
 namespace SysGaming_WalletAPI.Services
 {
@@ -13,13 +13,34 @@ namespace SysGaming_WalletAPI.Services
 
         public async Task<Player> SavePlayer(PlayerDTO playerDTO){
             
+            if (VerifyEmail(playerDTO.Email))
+            {
+                throw new DuplicateEmailException("Email already in use.");
+            }
+
             Player player = ConvertFromPlayerDTO(playerDTO);
 
             player.CreatedDate = DateTime.UtcNow;
             _context.Players.Add(player);
+
             await _context.SaveChangesAsync();
+
+            if(player.Wallet.Balance > 0){
+                RegisterTransaction(player.Id,TransactionType.DEPOSIT,player.Wallet.Balance);
+            }
             
             return player;
+        }
+        private void RegisterTransaction(int playerId,TransactionType type,decimal value){
+            Transaction transaction = new()
+            {
+                PlayerId = playerId,
+                Type = type,
+                Value = value,
+                DateTime = DateTime.UtcNow
+            };
+            _context.Transactions.Add(transaction);
+            _context.SaveChangesAsync();
         }
 
         public bool VerifyEmail(string Email){
@@ -32,7 +53,7 @@ namespace SysGaming_WalletAPI.Services
 
             if (player == null)
             {
-                return null;
+                throw new NotFoundException($"Player with ID {id} not found.");
             }
             return ConvertFromPlayer(player);
         }

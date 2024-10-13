@@ -10,12 +10,12 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyCompanyAttribute("SysGaming-WalletAPI")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("SysGaming_WalletAPI.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+382058409e18e71bd93117a9881ca215b60b31e9")]
-[assembly: System.Reflection.AssemblyProductAttribute("SysGaming-WalletAPI")]
-[assembly: System.Reflection.AssemblyTitleAttribute("SysGaming-WalletAPI")]
+[assembly: System.Reflection.AssemblyProductAttribute("SysGaming_WalletAPI.Tests")]
+[assembly: System.Reflection.AssemblyTitleAttribute("SysGaming_WalletAPI.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
 
 // Gerado pela classe WriteCodeFragment do MSBuild.
