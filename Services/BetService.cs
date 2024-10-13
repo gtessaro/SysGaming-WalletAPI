@@ -59,8 +59,8 @@ namespace SysGaming_WalletAPI.Services
             }else{
                 player.Wallet.Balance -= betDTO.Value;
             }
-            bool playerWon = _random.Next(0, 2) == 1;
-            // bool playerWon = _random.Next(0, 2) >= 2;
+            // bool playerWon = _random.Next(0, 2) == 1;
+            bool playerWon = _random.Next(0, 2) >= 2;
 
             var bet = RegisterBet(betDTO, playerWon);
 
@@ -119,21 +119,52 @@ namespace SysGaming_WalletAPI.Services
 
         }
 
+        // private async Task<decimal> HandleLostBetAsync(int playerId)
+        // {
+        //     var totalLostBets = await _context.Bets
+        //         .Where(b => b.PlayerId == playerId && b.Status == BetStatus.LOST)
+        //         .CountAsync();
+
+        //     if (totalLostBets > 0 && totalLostBets % 5 == 0)
+        //     {
+        //         var lostBets = await _context.Bets
+        //             .Where(b => b.PlayerId == playerId && b.Status == BetStatus.LOST)
+        //             .OrderByDescending(b => b.DateTime)
+        //             .Take(5)
+        //             .ToListAsync();
+
+        //         var totalLostAmount = lostBets.Sum(b => Math.Abs(b.Value));
+        //         var bonus = totalLostAmount * 0.10m; // Bônus de 10%
+
+        //         RegisterTransaction(playerId, TransactionType.PRIZE, bonus);
+
+        //         return bonus; 
+        //     }
+
+        //     return 0; 
+        // }
+
         private async Task<decimal> HandleLostBetAsync(int playerId)
         {
-            var totalLostBets = await _context.Bets
-                .Where(b => b.PlayerId == playerId && b.Status == BetStatus.LOST)
-                .CountAsync();
-
-            if (totalLostBets > 0 && totalLostBets % 5 == 0)
-            {
-                var lostBets = await _context.Bets
-                    .Where(b => b.PlayerId == playerId && b.Status == BetStatus.LOST)
+            var last5Bets = await _context.Bets
+                    .Where(b => b.PlayerId == playerId )
                     .OrderByDescending(b => b.DateTime)
                     .Take(5)
                     .ToListAsync();
 
-                var totalLostAmount = lostBets.Sum(b => Math.Abs(b.Value));
+            bool allLost = true;
+
+            foreach (var bet in last5Bets)
+            {
+                if(bet.Status == BetStatus.WON){
+                    allLost = false;
+                    break;
+                }
+            }
+
+            if (allLost)
+            {
+                var totalLostAmount = last5Bets.Sum(b => Math.Abs(b.Value));
                 var bonus = totalLostAmount * 0.10m; // Bônus de 10%
 
                 RegisterTransaction(playerId, TransactionType.PRIZE, bonus);
@@ -143,6 +174,7 @@ namespace SysGaming_WalletAPI.Services
 
             return 0; 
         }
+
 
         private Bet RegisterBet(BetDTO betDTO, bool playerWon)
         {
@@ -169,35 +201,6 @@ namespace SysGaming_WalletAPI.Services
             };
             _context.Transactions.Add(transaction);
         }
-
-        // public async Task<Bet> CreateBetWS(BetDTO betDTO)
-        // {
-        //     var player = await _context.Players.Include(j => j.Wallet)
-        //         .FirstOrDefaultAsync(j => j.Id == betDTO.PlayerId);
-
-        //     if (player == null || player.Wallet.Balance < betDTO.Value)
-        //     {
-        //         throw new InsuficientBalanceException("Insufficient balance.");
-        //     }
-
-        //     player.Wallet.Balance -= betDTO.Value;
-
-        //     var bet = new Bet
-        //     {
-        //         PlayerId = betDTO.PlayerId,
-        //         Value = betDTO.Value,
-        //         Status = BetStatus.LOST,
-        //         DateTime = DateTime.UtcNow
-        //     };
-
-        //     _context.Bets.Add(bet);
-        //     await _context.SaveChangesAsync();
-
-        //     // Enviar atualização do saldo via WebSocket
-        //     await NotifyWalletUpdate(player.Id, player.Wallet.Balance);
-
-        //     return bet;
-        // }
 
         private async Task NotifyWalletUpdate(int playerId, decimal newBalance)
         {
