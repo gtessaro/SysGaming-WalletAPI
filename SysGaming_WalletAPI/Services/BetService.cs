@@ -59,8 +59,8 @@ namespace SysGaming_WalletAPI.Services
             }else{
                 player.Wallet.Balance -= betDTO.Value;
             }
-            // bool playerWon = _random.Next(0, 2) == 1;
-            bool playerWon = _random.Next(0, 2) >= 2;
+            bool playerWon = _random.Next(0, 2) == 1;
+            // bool playerWon = _random.Next(0, 2) >= 2;
 
             var bet = RegisterBet(betDTO, playerWon);
 
@@ -121,11 +121,15 @@ namespace SysGaming_WalletAPI.Services
 
         public async Task<decimal> HandleLostBetAsync(int playerId)
         {
-            var last5Bets = await _context.Bets
+            List<Bet> last5Bets = await _context.Bets
                     .Where(b => b.PlayerId == playerId )
                     .OrderByDescending(b => b.DateTime)
                     .Take(5)
                     .ToListAsync();
+            
+            if(last5Bets.Count<5){
+                return 0;
+            }
 
             bool allLost = true;
 
